@@ -1,0 +1,13 @@
+Source: sbdmock
+Priority: optional
+Section: devel
+Maintainer: Alexandr D. Kanevskiy <packages@bifh.org>
+Build-Depends-Indep: debhelper (>= 4.1.25), python
+Standards-Version: 3.6.1
+
+Package: sbdmock
+Architecture: all
+Depends: ${python:Depends}, python-minideblib, scratchbox-core (>=0.9.8.4)
+Conflicts: scratchbox-core (>=1.0)
+Description: Tool to rebuild single Debian source package
+ in clean scratchbox target

@@ -1,0 +1,169 @@
+sbdmock (0.3.14) unstable; urgency=low
+
+  * sbdarchtarget: Extended list of known debian arches
+  * sbdarchtarget: More clever parser for list of arches
+  * sbdarchtarget: small code cleanups
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Thu, 16 Mar 2006 11:57:59 +0200
+
+sbdmock (0.3.13) unstable; urgency=low
+
+  * Fix for IOError handling during retreiving rootstrap
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Fri, 10 Feb 2006 11:27:19 +0200
+
+sbdmock (0.3.12) unstable; urgency=low
+
+  * More safe result code handling
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Thu,  9 Feb 2006 15:20:56 +0200
+
+sbdmock (0.3.11) unstable; urgency=low
+
+  * Fix for result code parsing issues.
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Thu,  9 Feb 2006 11:14:05 +0200
+
+sbdmock (0.3.10) unstable; urgency=low
+
+  * use --no-remove option for apt-get when installing build-deps.
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Mon, 16 Jan 2006 17:54:36 +0200
+
+sbdmock (0.3.9) unstable; urgency=low
+
+  * Better handling situations with unresolved build dependencies
+    We will fail on "setup" stage, and not on "build" stage as before
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Thu, 12 Jan 2006 14:01:55 +0200
+
+sbdmock (0.3.8) unstable; urgency=low
+
+  * Do not warn about some missing build-deps, if they are really satisfied.
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Wed, 16 Nov 2005 10:02:30 +0200
+
+sbdmock (0.3.7) unstable; urgency=low
+
+  * Fixed one character type in regexp
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Fri, 11 Nov 2005 16:36:12 +0200
+
+sbdmock (0.3.6) unstable; urgency=low
+
+  * Handle crappy lines from dpkg-source nicely
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Fri, 11 Nov 2005 16:19:53 +0200
+
+sbdmock (0.3.5) unstable; urgency=low
+
+  * added --insertrepo parameter. Works like --addrepo, but instert
+    repositories before repositories from config
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Wed,  2 Nov 2005 20:26:50 +0200
+
+sbdmock (0.3.4) unstable; urgency=low
+
+  * Fix typo
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Wed,  2 Nov 2005 14:53:11 +0200
+
+sbdmock (0.3.3) unstable; urgency=low
+
+  * Make possible to redefine dpkg-buildpackage call via 'dpkg-buildpackage'
+    key in target config. 
+    Default value 'dpkg-buildpackage -rfakeroot -uc -us -sa -D'
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Wed,  2 Nov 2005 14:35:46 +0200
+
+sbdmock (0.3.2) unstable; urgency=low
+
+  * More good logging about installation of build-dependencies
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Tue,  1 Nov 2005 16:28:12 +0200
+
+sbdmock (0.3.1) unstable; urgency=low
+
+  * Fix first command execution in sbox
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Fri, 28 Oct 2005 20:39:40 +0300
+
+sbdmock (0.3.0) unstable; urgency=low
+
+  * Added ability to place host_usr hacks
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Wed, 26 Oct 2005 12:09:02 +0300
+
+sbdmock (0.2.0) unstable; urgency=low
+
+  * Added realtime logging
+  * Do not check build deps if they are already satisfied
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Mon, 24 Oct 2005 19:11:03 +0300
+
+sbdmock (0.1.9) unstable; urgency=low
+
+  * Fix misstype
+  * Install static list of dependencies first, and only then try to
+    satisfy dependencies with alternatives
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Fri, 21 Oct 2005 15:53:53 +0300
+
+sbdmock (0.1.8) unstable; urgency=low
+
+  * Check that dsc file exists
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Fri, 21 Oct 2005 15:26:59 +0300
+
+sbdmock (0.1.7) unstable; urgency=low
+
+  * Fix issue with alternativies
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Fri, 21 Oct 2005 11:45:31 +0300
+
+sbdmock (0.1.6) unstable; urgency=low
+
+  * Do not try to __repr__(options). This will eliminate warning on 
+    python 2.3.5
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Thu, 20 Oct 2005 19:10:03 +0300
+
+sbdmock (0.1.5) unstable; urgency=low
+
+  * Added sbdarchtarget, to simplify target iterations
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Thu, 20 Oct 2005 15:26:26 +0300
+
+sbdmock (0.1.4) unstable; urgency=low
+
+  * Added --sbtarget option. Overrides 'sbtarget' from config
+  * Added --addrepo options. This repository will be append to sources.list
+  * Fix error codes. Now it's easier to understand was it package or
+    environment/scratchbox error.
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Wed, 19 Oct 2005 13:52:50 +0300
+
+sbdmock (0.1.3) unstable; urgency=low
+
+  * Fixed bug with placing special files from configuration 
+    (e.g. sources.list)
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Fri, 14 Oct 2005 11:16:59 +0300
+
+sbdmock (0.1.2) unstable; urgency=low
+
+  * Fix problem in case, then config['root'] not defined
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Tue, 11 Oct 2005 15:24:27 +0300
+
+sbdmock (0.1.1) unstable; urgency=low
+
+  * Minimal checks for sbrsh targets
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Tue, 11 Oct 2005 15:13:39 +0300
+
+sbdmock (0.1) unstable; urgency=low
+
+  * Initial packaging 
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Wed,  5 Oct 2005 15:40:38 +0300
