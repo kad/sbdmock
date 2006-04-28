@@ -44,6 +44,7 @@ from optparse import OptionParser
 # debug
 # sys.path.append("./")
 from minideblib.ChangeFile import ChangeFile
+from minideblib.DpkgVersion import DpkgVersion
 
 __VERSION__ = "r"+"$Revision$"[11:-2]
 
@@ -311,12 +312,13 @@ class SBBuilder:
         (retval, output) = self.do_chroot(cmd)
         self.root_log(output)
         
-        match = re.search('dpkg-source: extracting .+ in (.+)(?:\s.+)?$', output)
-        if match:
-            pkgsubdir = match.group(1)
-        else:
+        pkgsubdir = "%s-%s" % (cdsc['source'], DpkgVersion(cdsc['version']).upstream)
+        
+        fpath = os.path.join(self.workdir, pkgsubdir)
+        if not os.path.isdir(fpath):
             self.debug("dpkg-source output: %s" % output)
-            raise PkgError, "Can't parse output of dpkg-source"
+            self.debug("Expected location should be: %s" % pkgsubdir)
+            raise PkgError, "Can't find package source directory %s after unpacking sources" % pkgsubdir
 
         self.install_build_deps(pkgsubdir)
     

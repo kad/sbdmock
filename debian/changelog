@@ -1,3 +1,9 @@
+sbdmock (0.3.15) unstable; urgency=low
+
+  * Use package name-version from .dsc instead of parsing dpkg-source output 
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Fri, 28 Apr 2006 19:33:33 +0300
+
 sbdmock (0.3.14) unstable; urgency=low
 
   * sbdarchtarget: Extended list of known debian arches
