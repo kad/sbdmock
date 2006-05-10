@@ -1,3 +1,10 @@
+sbdmock (0.3.16) unstable; urgency=low
+
+  * Added posibility to override environment variables in user configs.
+    Just assign None to it to not export it.
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Wed, 10 May 2006 20:19:02 +0300
+
 sbdmock (0.3.15) unstable; urgency=low
 
   * Use package name-version from .dsc instead of parsing dpkg-source output 

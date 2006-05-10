@@ -542,7 +542,8 @@ class SBBuilder:
         os.write(fd,'source /targets/links/scratchbox.config\n\n') 
         os.write(fd,'# Configuration environment options: \n')
         for variable, value in self.config['env'].iteritems():
-            os.write(fd,'export %s="%s"\n' % (variable, value))
+            if value is not None:
+                os.write(fd,'export %s="%s"\n' % (variable, value))
         if self.config['host_usr']:
             os.write(fd,'export PATH=/host_usr/bin:$PATH\n')
             # MSS: is it not a bit too demanding for the shell? how many items we usually have in host_usr?
