@@ -1,3 +1,9 @@
+sbdmock (0.3.17) unstable; urgency=low
+
+  * Fix the list of debian supported arches and our arches
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Wed, 24 May 2006 17:13:26 +0300
+
 sbdmock (0.3.16) unstable; urgency=low
 
   * Added posibility to override environment variables in user configs.

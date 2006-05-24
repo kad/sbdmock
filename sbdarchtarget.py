@@ -36,8 +36,8 @@ from pprint import pformat
 __VERSION__ = "r"+"$Revision$"[11:-2]
 
 debugging = False
-supported_arches = ['i386', 'arm', 'ui386', 'uarm']
-debian_arches = ['i386', 'arm', 'amd64', 'sparc', 'powerpc', 'alpha']
+supported_arches = ['i386', 'arm', 'armel', 'ui386', 'uarm']
+debian_arches = [ 'alpha', 'amd64', 'arm', 'armeb', 'armel', 'hppa', 'i386', 'ia64', 'm32r', 'm68k', 'mips', 'mipsel', 'powerpc', 'ppc64', 's390', 's390x', 'sh3', 'sh3eb', 'sh4', 'sh4eb', 'sparc' ]
 
 def error(msg):
     print >> sys.stderr, msg
