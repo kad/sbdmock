@@ -7,7 +7,6 @@ Standards-Version: 3.6.1
 
 Package: sbdmock
 Architecture: all
-Depends: ${python:Depends}, python-minideblib, scratchbox-core (>=0.9.8.4)
-Conflicts: scratchbox-core (>=1.0)
+Depends: ${python:Depends}, python-minideblib, scratchbox-core (>=1.0.6)
 Description: Tool to rebuild single Debian source package
  in clean scratchbox target
