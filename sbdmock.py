@@ -52,6 +52,7 @@ def error(msg):
     """Prints error to stderr"""
     print >> sys.stderr, msg
 
+
 def strtimestamp():
     """Return string with timestamp"""
     return time.strftime("[%F %T]")
@@ -313,6 +314,10 @@ class SBBuilder:
         cmd = "cd %s && %s" % (os.path.join(self.sb_workdir, pkgsubdir), self.config['dpkg-buildpackage'])
         self.state("build")
 
+        for variable, value in self.config['env'].iteritems():
+            if value is not None:
+                self.build_log('%s="%s"' % (variable, value))
+
         #self.root_log(cmd)
         (retval, output) = self.do_chroot_ng(cmd)
 
@@ -354,12 +359,6 @@ class SBBuilder:
         (ret, builddeps) = self._sb_try_satisfy_build_deps(builddeps, pkgsubdir)
         if ret and not builddeps:
             return
-
-        # For safety, let's try one more time
-        #self.root_log("Ensure build-deps")
-        #(ret, builddeps) = self._sb_try_satisfy_build_deps(builddeps, pkgsubdir)
-        #if ret and not builddeps:
-        #    return
 
         self.root_log("Checking build environment...")
         builddeps = self._sb_check_pkg_builddepends(pkgsubdir)
@@ -431,8 +430,6 @@ class SBBuilder:
         # Do we have alts ?
         if builddeps.find('|') < 0:
             # we are lucky, only one variant
-            #variants.append(builddeps)
-            #return variants
             return (builddeps, [])
         else:
             regexp = "("+PackageRegex + "(\s*\|\s*" + PackageRegex +")+)"
@@ -524,10 +521,12 @@ class SBBuilder:
         """Kills all processes in other scratchbox sessions. SIGHUP should be enough by default"""
         self.do_chroot("sb-conf killall --signal=%d" % sig)
 
+
     def _sb_remove_target(self):
         """Removes target completelly"""
         self.do_chroot("sb-conf remove --force %s" % self.sbtarget)
-    
+
+
     def _sb_create_target(self):
         """Creates target from specification"""
         if not self.config['compiler-name']:
@@ -539,6 +538,7 @@ class SBBuilder:
         if self.config['cputransparency-method']:
             cmdline += " -t %s" % self.config['cputransparency-method']
         self.do_chroot(cmdline)
+
 
     def _sb_make_cmdfile(self, command, fdn):
         """make cmd file for execution inside scratchbox"""
@@ -770,6 +770,7 @@ class SBBuilder:
             # KAD: do we need it here ?
             self._sb_copy_fakeroot()
 
+
     def _sb_extract_special_files(self):
         # write in sources.list into chroot
         aptsconf = os.path.join(self.sbtargetdir, 'etc', 'apt','sources.list')
@@ -790,6 +791,7 @@ class SBBuilder:
             if os.path.basename(os.path.dirname(key)) in ("bin","sbin"):
                 os.chmod(fnm, 0755)
         self._sb_setup_host_usr()
+
 
     def _sb_setup_host_usr_symlink(self):
         """Remove /host_usr/bin. If we have our own"""
@@ -812,6 +814,7 @@ class SBBuilder:
             if not os.path.exists(dname_c + dname_t):
                 os.symlink(dname_t, dname_c)
 
+
     def _sb_setup_host_usr(self):
         if self.config['host_usr']:
             dname = os.path.join(self.sbbasedir, 'host_usr/bin') + '.' + self.sbtarget
@@ -828,6 +831,7 @@ class SBBuilder:
                 # Make it executable
                 os.chmod(fnm, 0755)
 
+
     def _sb_clean_host_usr(self):
         dname = os.path.join(self.sbbasedir, 'host_usr/bin') + '.' + self.sbtarget
         if os.path.exists(dname):
@@ -836,6 +840,22 @@ class SBBuilder:
         if os.path.islink(dname) and os.readlink(dname) == "bin." + self.sbtarget:
             os.unlink(dname)
 
+
+def update_build_options(buildops, newops):
+    boa = buildops.split(",")
+    opsa = newops.split(",")
+    for op in opsa:
+        if op == "-*":
+            # remove everything
+            boa = []
+        elif op[0] == "+":
+            boa.append(op[1:])
+        elif op[0] == "-":
+            boa = [x for x in boa if x != op[1:]]
+        else:
+            # unknown operation, just ignore it
+            continue
+    return ",".join(boa)
 
 def command_parse():
     """return options and args from parsing the command line"""
@@ -873,6 +893,8 @@ def command_parse():
              help="same as '-b', but no architecture-independent binary package files are to be build either")
     parser.add_option("-S", action ="store_const", dest="buildmode", const="-S",
              help="only the source should be build and no binary packages need to be made")
+    parser.add_option("--dbo", action="store", type="string", default=None,
+            help="Modifiers for DEB_BUILD_OPTIONS (e.g. '+debug,-parallel')")
 
     return parser.parse_args()
 
@@ -994,6 +1016,13 @@ def main():
 
     if options.uniqueext:
         config_opts['uniqueext'] = options.uniqueext
+
+    if options.dbo:
+        dbo = update_build_options(config_opts['env'].get('DEB_BUILD_OPTIONS',''), options.dbo)
+        if dbo:
+            config_opts['env']['DEB_BUILD_OPTIONS'] = dbo
+        else:
+            config_opts['env']['DEB_BUILD_OPTIONS'] = None
 
     my = None
     # do whatever we're here to do

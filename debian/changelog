@@ -1,3 +1,9 @@
+sbdmock (0.3.99.7) unstable; urgency=low
+
+  * Added possibility to change DEB_BUILD_OPTIONS (--dbo)
+
+ -- Alexandr Kanevskiy <packages@bifh.org>  Mon, 30 Apr 2007 13:51:26 +0300
+
 sbdmock (0.3.99.6) unstable; urgency=low
 
   * killall -15 before selecting target.
