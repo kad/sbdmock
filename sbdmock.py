@@ -3,7 +3,7 @@
 #
 # This file is part of sbdmock
 #
-# Copyright (C) 2005,2006 Alexandr Kanevskiy
+# Copyright (C) 2005-2007 Alexandr Kanevskiy
 #
 # Contact: Alexandr D. Kanevskiy <packages@bifh.org>
 #
@@ -927,7 +927,7 @@ def main():
         'sb_homedir': os.path.join('/home', os.environ['USER']),
         'files': {},
         'host_usr': {},
-        'env': {},
+        'env': { 'DEBIAN_FRONTEND': 'noninteractive', 'DEBIAN_PRIORITY': 'critical' },
         'rm': 'rm',
         'dpkg-buildpackage': 'dpkg-buildpackage -rfakeroot -uc -us -sa -D',
         'scratchbox': '/usr/bin/scratchbox',
