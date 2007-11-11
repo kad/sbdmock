@@ -28,7 +28,7 @@ binary-indep: build install
 	dh_link
 	dh_compress
 	dh_fixperms
-	dh_python
+	dh_pycentral
 	dh_installdeb
 	dh_gencontrol
 	dh_md5sums

@@ -3,9 +3,9 @@
 #
 # This file is part of sbdmock
 #
-# Copyright (C) 2005,2006 Alexandr Kanevskiy
+# Copyright (C) 2005-2007 Alexandr D. Kanevskiy
 #
-# Contact: Alexandr Kanevskiy <packages@bifh.org>
+# Contact: Alexandr D. Kanevskiy <packages@bifh.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -33,10 +33,11 @@ from optparse import OptionParser
 from minideblib.ChangeFile import ChangeFile
 from pprint import pformat
 
-__VERSION__ = "r"+"$Revision$"[11:-2]
+__revision__ = "r"+"$Revision$"[11:-2]
 
 debugging = False
-supported_arches = ['i386', 'arm', 'armel', 'ui386', 'uarm']
+# supported_arches sorted by the preference to use for 'all' source architecture 
+supported_arches = ['i386', 'armel', 'arm', 'ui386', 'uarm']
 debian_arches = [ 'alpha', 'amd64', 'arm', 'armeb', 'armel', 'hppa', 'i386', 'ia64', 'm32r', 'm68k', 'mips', 'mipsel', 'powerpc', 'ppc64', 's390', 's390x', 'sh3', 'sh3eb', 'sh4', 'sh4eb', 'sparc' ]
 
 def error(msg):
@@ -81,7 +82,6 @@ def main():
 
     arches = {}
     arches['any'] = []
-    arches['all'] = []
 
     if options.arch:
         for line in options.arch:
@@ -92,13 +92,21 @@ def main():
                 if arch not in supported_arches:
                     error("Unsupported arch specified: %s" % arch)
                 else:
-                    if not arches.has_key(arch):
+                    if arch not in arches:
                         arches[arch] = []
                     arches[arch].append(target)
                     if arch in debian_arches:
-                        arches['all'].append(target)
                         arches['any'].append(target)
 
+    # special case for packages which produce only arch independed binaries.
+    arches['all'] = []
+    for arch in supported_arches:
+        if arch in arches:
+            arches['all'].append(arches[arch][0])
+            break
+    # nothing found, pick first from 'any'
+    if not arches['all'] and arches['any']:
+        arches['all'].append(arches['any'][0])
 
     debug(pformat(arches))
 

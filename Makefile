@@ -1,7 +1,7 @@
 SUBDIRS = 
 
 PKGNAME = sbdmock
-VERSION=$(shell awk '/__VERSION__ = / { print $$3 }' sbdmock.py)
+VERSION=$(shell awk '/__revision__ = / { print $$3 }' sbdmock.py)
 
 all: subdirs
 

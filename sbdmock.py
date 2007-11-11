@@ -3,7 +3,7 @@
 #
 # This file is part of sbdmock
 #
-# Copyright (C) 2005-2007 Alexandr Kanevskiy
+# Copyright (C) 2005-2007 Alexandr D. Kanevskiy
 #
 # Contact: Alexandr D. Kanevskiy <packages@bifh.org>
 #
@@ -41,7 +41,7 @@ from optparse import OptionParser
 from minideblib.ChangeFile import ChangeFile
 from minideblib.DpkgVersion import DpkgVersion
 
-__VERSION__ = "r"+"$Revision$"[11:-2]
+__revision__ = "r"+"$Revision$"[11:-2]
 
 # Fixed settings, do not change these unless you really know what you are doing
 PackageRegex = "[a-z0-9][a-z0-9.+-]+"        # Regular expression package names must comply with
@@ -257,6 +257,8 @@ class SBBuilder:
     def apt(self, cmd):
         """executes apt-get inside target"""
         basecmd = "fakeroot apt-get -y -q "
+        if self.config['apt-get_options']:
+            basecmd += self.config['apt-get_options']
         command = '%s %s </dev/null' % (basecmd, cmd)
         self.debug("apt: command %s" % command)
 
@@ -930,6 +932,7 @@ def main():
         'env': { 'DEBIAN_FRONTEND': 'noninteractive', 'DEBIAN_PRIORITY': 'critical' },
         'rm': 'rm',
         'dpkg-buildpackage': 'dpkg-buildpackage -rfakeroot -uc -us -sa -D',
+        'apt-get_options': '',
         'scratchbox': '/usr/bin/scratchbox',
         'sources.list': '',
         'uniqueext': '',

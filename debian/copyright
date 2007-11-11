@@ -1,8 +1,8 @@
-Copyright 2005,2006 Alexandr D. Kanevskiy <kad@bifh.org>
+Copyright 2005-2007 Alexandr D. Kanevskiy <kad (a) bifh.org>
 
 Contains parts of mock program by:
 Copyright 2005 Seth Vidal <skvidal@phy.duke.edu>
 
-Licensed under the Gnu GPL.
+Licensed under the Gnu GPLv2.
 
-See /usr/share/common-licenses/GPL on your Debian system.
+See /usr/share/common-licenses/GPLv2 on your Debian system.
