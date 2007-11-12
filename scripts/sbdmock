@@ -190,9 +190,11 @@ class SBBuilder:
         self.tmplog = [] # zero out the logs
 
 
-    def debug(self, msg):
+    def debug(self, msg, strip = False):
         """ Print debug messages on stdout, if debug option enabled """
         if self.config['debug']:
+            if strip:
+                msg = msg.rstrip()
             print "%s DEBUG: %s" % (strtimestamp(), msg)
 
 
@@ -696,7 +698,7 @@ class SBBuilder:
             if collect:
                 logfile.write(line)
                 logfile.flush()
-                self.debug(line)
+                self.debug(line, True)
                 output += line
 
         pipe.fromchild.close()
@@ -1002,7 +1004,7 @@ def main():
 
     if options.addrepo:
         # Append to sources lists repositories from command line
-        config_opts['sources.list'] +="\n# Repositories added from command line\n"
+        config_opts['sources.list'] += "\n# Repositories added from command line\n"
         for repo in options.addrepo:
             config_opts['sources.list'] += repo+"\n"
 
