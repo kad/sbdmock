@@ -4,7 +4,10 @@
 #
 # $Id: setup.py 82 2007-11-11 23:01:26Z kad $
 
+import glob
+
 from distutils.core import setup
+
 
 setup (name = "sbdmock",
     description = "Scratchbox debian package builder",
@@ -14,7 +17,6 @@ setup (name = "sbdmock",
     url = "http://bifh.org/wiki/sbdmock",
     license = "GPL",
     scripts = ['scripts/sbdmock', 'scripts/sbdarchtarget' ],
-    requires = ['minideblib', ],
     long_description = "Scratchbox debian package builder",
     keywords = "python debian dpkg scratchbox",
     platforms="Python 2.3 and later.",
@@ -28,3 +30,5 @@ setup (name = "sbdmock",
         ]
     )
 
+# Not installing example configs
+#data_files=[('/etc/sbdmock', glob.glob("etc/*.cfg")), ],
