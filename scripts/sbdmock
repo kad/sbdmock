@@ -933,7 +933,7 @@ def main():
         'rm': 'rm',
         'dpkg-buildpackage': 'dpkg-buildpackage -rfakeroot -uc -us -sa -D',
         'apt-get_options': '',
-        'scratchbox': '/usr/bin/scratchbox',
+        'scratchbox': '/scratchbox/login',
         'sources.list': '',
         'uniqueext': '',
         'uniqueext-auto': False,
