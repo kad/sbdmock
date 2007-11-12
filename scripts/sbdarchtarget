@@ -55,7 +55,7 @@ def command_parse():
     usage = """
     usage: sbdarchtarget [options] /path/to/dsc
     """
-    parser = OptionParser(usage=usage, version=__VERSION__)
+    parser = OptionParser(usage=usage, version=__revision__)
     parser.add_option("--arch", "-a",  action ="append", type="string", dest="arch", 
              default=None, help="arch:target mapping")
     parser.add_option("--debug", "-d", action ="store_true", dest="debug",
