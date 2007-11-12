@@ -2,8 +2,9 @@ sbdmock (0.4.0) unstable; urgency=low
 
   * Public release
   * Example configuration files for Maemo 4.0/Chinook
+  * Use python's distutils instead of own Makefile
 
- -- Alexandr D. Kanevskiy <packages@bifh.org>  Sun, 11 Nov 2007 23:55:12 +0300
+ -- Alexandr D. Kanevskiy <packages@bifh.org>  Mon, 12 Nov 2007 12:17:45 +0200
 
 sbdmock (0.3.99.11) unstable; urgency=low
 
