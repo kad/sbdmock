@@ -1,3 +1,4 @@
 include MANIFEST.in
+include *.spec
 recursive-include etc *.cfg
 recursive-include debian *
