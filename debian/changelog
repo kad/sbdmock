@@ -1,3 +1,9 @@
+sbdmock (0.4.2) unstable; urgency=low
+
+  * Added possibility to define and re-define variables from command-line
+
+ -- Alexandr D. Kanevskiy <packages@bifh.org>  Fri, 24 Apr 2009 12:25:23 +0300
+
 sbdmock (0.4.1) unstable; urgency=low
 
   * type() -> isinstance()

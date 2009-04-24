@@ -1,5 +1,5 @@
 Name:           sbdmock
-Version:        0.4.0
+Version:        0.4.2
 Release:        1%{?dist}
 Summary:        Scratchbox debian package builder
 
@@ -48,5 +48,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 24 2009 Alexandr D. Kanevskiy <packages@bifh.org>
+- 0.4.2 release
+
 * Sun Nov 11 2007 Alexandr D. Kanevskiy <packages@bifh.org>
 - initial packaging 

@@ -866,6 +866,16 @@ def update_build_options(buildops, newops):
             continue
     return ",".join(boa)
 
+def parse_define_option(define):
+    # Parses --define option arguments. Should be in format name=value
+    parsed = define.split('=', 1)
+    var = parsed[0]
+    if len(parsed) == 1:
+        value = ''
+    else:
+        value = parsed[1]
+    return (var, value)
+
 def command_parse():
     """return options and args from parsing the command line"""
     
@@ -904,6 +914,8 @@ def command_parse():
              help="only the source should be build and no binary packages need to be made")
     parser.add_option("--dbo", action="store", type="string", default=None,
             help="Modifiers for DEB_BUILD_OPTIONS (e.g. '+debug,-parallel')")
+    parser.add_option("--define", action="append", type="string", default=None,
+            help="Define variables which might be used in other variables. Format: name=value")
     
     return parser.parse_args()
 
@@ -945,14 +957,14 @@ def main():
         'uniqueext': '',
         'uniqueext-auto': False,
     }
-    
+
     try:
         config_opts['files']['/etc/resolv.conf'] = open("/etc/resolv.conf", "r").read()
         #config_opts['files']['/etc/hosts'] = open("/etc/hosts", "r").read()
     except:
         # we can ignore errors here. If file is not exists or not readable
         pass
-    
+
     # cli option parsing
     (options, args) = command_parse()
     
@@ -1033,7 +1045,28 @@ def main():
             config_opts['env']['DEB_BUILD_OPTIONS'] = dbo
         else:
             config_opts['env']['DEB_BUILD_OPTIONS'] = None
-    
+
+    if options.define:
+        for define in options.define:
+            (var, value) = parse_define_option(define)
+            if isinstance(config_opts.get(var, ''), types.StringType):
+                # Don't override arrays with user defied strings
+                config_opts[var] = value
+
+    # Update variables, using defines
+    for var in config_opts:
+        if isinstance(config_opts[var], types.StringType):
+            changed = True
+            while changed:
+                prev_value = config_opts[var]
+                try:
+                    config_opts[var] = config_opts[var] % config_opts
+                except KeyError, kee:
+                    # If unknown variable specified, add it as empty string, and re-try
+                    config_opts[kee.args[0]] = ''
+                if config_opts[var] == prev_value:
+                    changed = False
+
     my = None
     # do whatever we're here to do
     if args[0] == 'clean':
