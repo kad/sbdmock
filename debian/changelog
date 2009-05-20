@@ -4,6 +4,8 @@ sbdmock (0.4.1) unstable; urgency=low
   * cleanup some whitespace
   * Compilation area (sb_homedir) now can be e.g. /usr/src/
 
+ -- Alexandr D. Kanevskiy <packages@bifh.org>  Wed,  7 May 2008 22:28:22 +0300
+
 sbdmock (0.4.0) unstable; urgency=low
 
   * Public release

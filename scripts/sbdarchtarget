@@ -22,7 +22,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 # 02110-1301 USA
 #
-# $Id$
 
 import sys
 import types
@@ -32,8 +31,6 @@ from optparse import OptionParser
 
 from minideblib.ChangeFile import ChangeFile
 from pprint import pformat
-
-__revision__ = "r"+"$Revision$"[11:-2]
 
 debugging = False
 # supported_arches sorted by the preference to use for 'all' source architecture 
@@ -55,7 +52,7 @@ def command_parse():
     usage = """
     usage: sbdarchtarget [options] /path/to/dsc
     """
-    parser = OptionParser(usage=usage, version=__revision__)
+    parser = OptionParser(usage=usage)
     parser.add_option("--arch", "-a",  action ="append", type="string", dest="arch", 
              default=None, help="arch:target mapping")
     parser.add_option("--debug", "-d", action ="store_true", dest="debug",

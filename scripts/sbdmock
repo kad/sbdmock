@@ -22,7 +22,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 # 02110-1301 USA
 #
-# $Id$
 
 import os
 import sys
@@ -40,8 +39,6 @@ from optparse import OptionParser
 
 from minideblib.ChangeFile import ChangeFile
 from minideblib.DpkgVersion import DpkgVersion
-
-__revision__ = "r"+"$Revision$"[11:-2]
 
 # Fixed settings, do not change these unless you really know what you are doing
 PackageRegex = "[a-z0-9][a-z0-9.+-]+"        # Regular expression package names must comply with
@@ -877,7 +874,7 @@ def command_parse():
     optional commands:
         clean - clean out the specified chroot
         init - initialize the chroot, do not build anything"""
-    parser = OptionParser(usage=usage, version=__revision__)
+    parser = OptionParser(usage=usage)
     parser.add_option("-r", action="store", type="string", dest="target",
                       default='default',
                       help="compilation target name/config file name default: %default")
