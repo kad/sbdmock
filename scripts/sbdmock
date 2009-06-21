@@ -236,15 +236,29 @@ class SBBuilder:
         
         # cleanup workdir
         if os.path.exists(self.builddir):
-            cmd = '%s -rfv %s' % (self.config['rm'], self.builddir)
-            (retval, output) = self.do(cmd)
-            
-            if retval != 0:
-                error("Errors cleaning out chroot: %s" % output)
-                if os.path.exists(self.builddir):
-                    raise RootError, "Failed to clean basedir, exiting"
-    
-    
+            try:
+                shutil.rmtree(self.builddir)
+            except OSError, ose:
+                if ose.errno == 13:
+                    # Permission denied. Strange, as we should own all those files
+                    try:
+                        # Enforce user rights and re-try
+                        import stat
+                        for dirpath, dirnames, filenames in os.walk(self.builddir):
+                            # FIXME: Bad default filemode, but ok for now
+                            for bdir in dirnames:
+                                os.chmod(os.path.join(dirpath, bdir), stat.S_IRWXU)
+                        shutil.rmtree(self.builddir)
+                    except OSError, ose:
+                        error("Unexpected error during removing work directory: %s" % str(ose))
+                        if os.path.exists(self.builddir):
+                            raise RootError, "Failed to clean basedir, exiting"
+                else:
+                    error("Unexpected error during removing work directory: %s" % str(ose))
+                    if os.path.exists(self.builddir):
+                        raise RootError, "Failed to clean basedir, exiting"
+
+
     def prep(self):
         """prepare root"""
         self.state("prep")
