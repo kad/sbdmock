@@ -641,7 +641,7 @@ class SBBuilder:
         
         self.root_log("Extracting rootstrap %s" % rootstrap)
         # Local sbox file, just run it
-        (status, output) = self.do_chroot("sb-conf rs %s" % rootstrap)
+        (status, output) = self.sb.extract_rootstrap(rootstrap)
         if output.find("_SBOX_RESTART_FILE") >= 0:
             # Workarround
             status = 0
@@ -654,10 +654,28 @@ class SBBuilder:
     def do_sbox(self, command):
         """execute given command via scratchbox"""
         
+        self.debug("Executing(scratchbox) %s" % command)
+        (sbtmpfd, sbtmpname) = tempfile.mkstemp('.sh', 'sbdmock-', os.path.join(self.basedir, "tmp"))
+        sb_tmpname = sbtmpname[len(self.basedir):]
+        #self.debug("tmpfile %s %s" % (sbtmpname,sb_tmpname))
+        
+        self._sb_make_cmdfile(command, sbtmpfd)
+        os.close(sbtmpfd)
+        os.chmod(sbtmpname, 0700)
+        
         # Check host_usr hack
         self._sb_setup_host_usr_symlink()
         
-        return self.sb.do(command)
+        (status, output) = commands.getstatusoutput( "%s %s %s" % \
+                                                    (self.sb.exe, 
+                                                     self.sb.get_mode_options(Scratchbox.MODE_EMUL),
+                                                     sb_tmpname))
+        self.debug("Return status: %d" % status)
+        
+        (retval, output) = self._sb_parse_output(output)
+        os.unlink(sbtmpname)
+        
+        return (retval, output)
     
     
     def do_sbox_ng(self, command, scratchbox_mode=Scratchbox.MODE_DEVEL):
