@@ -524,15 +524,9 @@ class SBBuilder:
     
     def _sb_reset_target(self):
         """cleanup target and put required libraries in place"""
+
         self._ensure_dir(self.builddir)
-        # Cleanup all other processes before reseting
-        self._sb_killall(15)
-        # insure active target
-        self.do_chroot("sb-conf se %s" % self.sbtarget)
-        if not self._sb_ensure_target(self.sbtarget):
-            raise SBError, "Failed to select target %s, exiting" % self.sbtarget
-        
-        self.do_chroot("sb-conf re -f")
+        self.sb.reset(self.sbtarget)
     
     def _sb_install_sb_files(self, sb_files = ("etc", "devkits")):
         """Installs into target Scratchbox files (etc, devkits, fakeroot, clibrary)"""
@@ -553,16 +547,7 @@ class SBBuilder:
     
     def _sb_create_target(self):
         """Creates target from specification"""
-        if not self.config['compiler-name']:
-            raise SBError, "No compilers specified for target %s, exiting" % self.sbtarget
-        if not self.config['devkits']:
-            raise SBError, "No devkits specified for target %s, exiting" % self.sbtarget
-        
-        cmdline = "sb-conf setup %s -f -c %s -d %s" % (self.sbtarget, self.config['compiler-name'], self.config['devkits'])
-        if self.config['cputransparency-method']:
-            cmdline += " -t %s" % self.config['cputransparency-method']
-        self.do_chroot(cmdline)
-    
+        self.sb.create_target(self.sbtarget, self.config)    
     
     def _sb_make_cmdfile(self, command, fdn):
         """make cmd file for execution inside scratchbox"""
