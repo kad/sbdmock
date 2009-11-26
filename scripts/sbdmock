@@ -116,6 +116,7 @@ class SBBuilder:
         self.basedir = scratchbox.get_basedir()
         # path to target: /scratchbox/users/$USER/targets/$TARGET
         self.targetdir = scratchbox.get_targetdir(self.sbtarget)
+        self.debug("Target directory: %s" % self.targetdir)
         # directory inside scratchbox where we perform build.
         # by default = /home/$USER in sb1
         # Base directories for build's workspace
@@ -130,11 +131,18 @@ class SBBuilder:
         self.resultdir = self.config.get('resultdir', os.path.join(self.builddir, 'result'))
         self.statedir = self.config.get('statedir', os.path.join(self.builddir, 'state'))
         
-        self._ensure_dir(self.statedir)
-        self.state("init")
-        
         if config['clean']:
             self.clean()
+        
+        if self.config['uniqueext']:
+            # temporary target.
+            # Let's ensure to remove old one:
+            self._sb_remove_target()
+            # we need to create it
+            self._sb_create_target()
+        
+        self._ensure_dir(self.statedir)
+        self.state("init")
         
         self._ensure_dir(self.builddir)
         self._ensure_dir(self.workdir)
@@ -218,9 +226,11 @@ class SBBuilder:
     
     def clean(self):
         """clean out chroot with extreme prejudice :)"""
-        self.state("clean")
+        # DR: in SB2 there is no directory yet to write state/status file into
+        #self.state("clean")
         
-        self.root_log('Cleaning Root')
+        # DR: in SB2 there is no directory yet to write root.log into
+        #self.root_log('Cleaning Root')
         
         if self.config['uniqueext']:
             # temporary target. Let's remove it
@@ -289,7 +299,7 @@ class SBBuilder:
         self.debug("apt: command %s" % command)
         
         self.root_log(command)
-        (retval, output) = self.do_chroot_ng(command)
+        (retval, output) = self.do_chroot_ng(command, scratchbox_mode=Scratchbox.MODE_EMUL)
         #self.root_log(output)
         
         if retval != 0:
@@ -501,13 +511,12 @@ class SBBuilder:
         self.state("ending")
         self._build_log.close()
         self._sb_killall()
-        if self.config['uniqueext-auto']:
-            self.root_log("Removing temporary target...")
-            self._sb_remove_target()
         self.state("done")
         self.root_log("Done.")
         self._root_log.close()
-    
+        if self.config['uniqueext-auto']:
+            self.debug("Removing temporary target...")
+            self._sb_remove_target()
     
     def _ensure_dir(self, path):
         """check for dir existence and/or makedir, if error out then raise Error"""
@@ -530,10 +539,10 @@ class SBBuilder:
     
     def _sb_install_sb_files(self, sb_files = ("etc", "devkits")):
         """Installs into target Scratchbox files (etc, devkits, fakeroot, clibrary)"""
-        if sb_files and isinstance(sb_files, (types.TupleType,types.ListType) ):
-            cmd_args = "sb-conf in --" + " --".join(sb_files)
-            self.do_chroot(cmd_args)
-        
+        #if sb_files and isinstance(sb_files, (types.TupleType,types.ListType) ):
+        #    cmd_args = "sb-conf in --" + " --".join(sb_files)
+        #    self.do_chroot(cmd_args)
+        self.sb.install_files(sb_files)
     
     def _sb_killall(self, sig = 1):
         """Kills all processes in other scratchbox sessions. SIGHUP should be enough by default"""
@@ -542,6 +551,7 @@ class SBBuilder:
     
     def _sb_remove_target(self):
         """Removes target completelly"""
+        self.sb.pull_dir(self.builddir, os.path.join(self.sb.get_basedir(), self.config['root']))
         self.sb.remove(self.sbtarget)
     
     
@@ -640,9 +650,10 @@ class SBBuilder:
         """execute given command via scratchbox"""
         
         self.debug("Executing(scratchbox) %s" % command)
-        (sbtmpfd, sbtmpname) = tempfile.mkstemp('.sh', 'sbdmock-', os.path.join(self.basedir, "tmp"))
-        sb_tmpname = sbtmpname[len(self.basedir):]
-        #self.debug("tmpfile %s %s" % (sbtmpname,sb_tmpname))
+        (sbtmpfd, sbtmpname) = tempfile.mkstemp('.sh', 'sbdmock-', self.sb.get_tmpdir())
+        #sb_tmpname = sbtmpname[len(self.basedir):]
+        sb_tmpname = os.path.join(self.sb.get_sb_tmpdir(), os.path.basename(sbtmpname))
+        self.debug("tmpfile %s %s" % (sbtmpname,sb_tmpname))
         
         self._sb_make_cmdfile(command, sbtmpfd)
         os.close(sbtmpfd)
@@ -651,11 +662,16 @@ class SBBuilder:
         # Check host_usr hack
         self._sb_setup_host_usr_symlink()
         
+        # TODO: SB2 HACK!!! commands need to be executed from target dir
+        savedir = os.getcwd() 
+        os.chdir(self.sb.get_targetdir(self.sbtarget))
+        self.debug("Directory temporarily changed to: %s" % self.sb.get_targetdir(self.sbtarget))
         (status, output) = commands.getstatusoutput( "%s %s %s" % \
                                                     (self.sb.exe, 
                                                      self.sb.get_mode_options(Scratchbox.MODE_EMUL),
                                                      sb_tmpname))
         self.debug("Return status: %d" % status)
+        os.chdir(savedir)
         
         (retval, output) = self._sb_parse_output(output)
         os.unlink(sbtmpname)
@@ -667,9 +683,10 @@ class SBBuilder:
         """ The same as do_sbox, but make logs tail-able"""
         
         self.debug("Executing(scratchbox) %s" % command)
-        (sbtmpfd, sbtmpname) = tempfile.mkstemp('.sh', 'sbdmock-', os.path.join(self.basedir, "tmp"))
-        sb_tmpname = sbtmpname[len(self.basedir):]
-        #self.debug("tmpfile %s %s" % (sbtmpname,sb_tmpname))
+        (sbtmpfd, sbtmpname) = tempfile.mkstemp('.sh', 'sbdmock-', self.sb.get_tmpdir())
+        #sb_tmpname = sbtmpname[len(self.basedir):]
+        sb_tmpname = os.path.join(self.sb.get_sb_tmpdir(), os.path.basename(sbtmpname))
+        self.debug("tmpfile %s %s" % (sbtmpname,sb_tmpname))
         
         self._sb_make_cmdfile(command, sbtmpfd)
         os.close(sbtmpfd)
@@ -677,11 +694,19 @@ class SBBuilder:
         
         # Check host_usr hack
         self._sb_setup_host_usr_symlink()
-        
-        pipe = popen2.Popen4("%s %s %s </dev/null" % \
+
+        self.debug("Current dir: %s" % os.getcwd())
+        # TODO: SB2 HACK!!! commands need to be executed from target dir
+        savedir = os.getcwd() 
+        os.chdir(self.sb.get_targetdir(self.sbtarget))
+        self.debug("Directory temporarily changed to: %s" % self.sb.get_targetdir(self.sbtarget))
+        cmd = "%s %s %s </dev/null" % \
                              (self.sb.exe,
                               self.sb.get_mode_options(scratchbox_mode),
-                              sb_tmpname))
+                              sb_tmpname)
+        self.debug("Executing in pipe: %s" % cmd)
+        pipe = popen2.Popen4(cmd)
+        os.chdir(savedir)
         # We will only read from pipe
         pipe.tochild.close()
         
@@ -772,13 +797,6 @@ class SBBuilder:
         """prep sb target for installation"""
         # switch to target
         # reset target
-        
-        if self.config['uniqueext']:
-            # temporary target.
-            # Let's ensure to remove old one:
-            self._sb_remove_target()
-            # we need to create it
-            self._sb_create_target()
         
         # If "clean" set, we already have clean target
         if not self.config['clean'] or self.config['uniqueext']:
@@ -946,6 +964,7 @@ def main():
         'host_usr': {},
         'env': { 'DEBIAN_FRONTEND': 'noninteractive', 'DEBIAN_PRIORITY': 'critical' },
         'rm': 'rm',
+        #'dpkg-buildpackage': 'dpkg-buildpackage -rfakeroot -uc -us -sa -D',
         'dpkg-buildpackage': 'dpkg-buildpackage -rfakeroot -uc -us -sa -D',
         'apt-get_options': '',
         'sources.list': '',
