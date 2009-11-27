@@ -238,7 +238,7 @@ class SBBuilder:
         else:
             # Normal target. let's just reset it
             # KAD: do we need to install etc and devkits here ?
-            self._sb_reset_target()
+            self.sb.reset(self.sbtarget)
         self._sb_clean_host_usr()
         
         # cleanup workdir
@@ -510,7 +510,7 @@ class SBBuilder:
         self.root_log("Cleaning up...")
         self.state("ending")
         self._build_log.close()
-        self._sb_killall()
+        self.sb.killall()
         self.state("done")
         self.root_log("Done.")
         self.root_log("Moving results to accessible directory...")
@@ -533,22 +533,12 @@ class SBBuilder:
             except OSError, err:
                 raise Error, "Could not create dir %s. Error: %s" % (path, err)
     
-    def _sb_reset_target(self):
-        """cleanup target and put required libraries in place"""
-
-        self._ensure_dir(self.builddir)
-        self.sb.reset(self.sbtarget)
-    
     def _sb_install_sb_files(self, sb_files = ("etc", "devkits")):
         """Installs into target Scratchbox files (etc, devkits, fakeroot, clibrary)"""
         #if sb_files and isinstance(sb_files, (types.TupleType,types.ListType) ):
         #    cmd_args = "sb-conf in --" + " --".join(sb_files)
         #    self.do_chroot(cmd_args)
         self.sb.install_files(sb_files)
-    
-    def _sb_killall(self, sig = 1):
-        """Kills all processes in other scratchbox sessions. SIGHUP should be enough by default"""
-        self.do_chroot("sb-conf killall --signal=%d" % sig)
     
     def _sb_create_target(self):
         """Creates target from specification"""
@@ -795,7 +785,7 @@ class SBBuilder:
         
         # If "clean" set, we already have clean target
         if not self.config['clean'] or self.config['uniqueext']:
-            self._sb_reset_target()
+            self.sb.reset(self.sbtarget)
     
     def _sb_extract_special_files(self):
         # write in sources.list into chroot
