@@ -853,7 +853,7 @@ def command_parse():
         init - initialize the chroot, do not build anything"""
     parser = OptionParser(usage=usage)
     parser.add_option("--sbver", action="store", type="int", dest="sbver",
-                      default=1,
+                      default=0,
                       help="Scratchbox version to use. By default the version %default is used.")
     parser.add_option("-r", action="store", type="string", dest="target",
                       default='default',
@@ -931,10 +931,6 @@ def main():
     except KeyError:
         gid = None
     
-    if options.sbver == 1 and (gid is None or gid not in os.getgroups()):
-        print "You need to be a member of the sbox group for use scratchbox"
-        sys.exit(1)
-    
     if len(args) < 1:
         error("No dsc or command specified - nothing to do")
         sys.exit(50)
@@ -957,6 +953,16 @@ def main():
     if os.path.exists(ucfg):
         execfile(ucfg)
         configured = True
+    
+    if 'sbver' not in config_opts:
+        config_opts['sbver'] = 1
+
+    if options.sbver > 0:
+        config_opts['sbver'] = options.sbver
+
+    if config_opts['sbver'] == 1 and (gid is None or gid not in os.getgroups()):
+        print "You need to be a member of the sbox group for use scratchbox"
+        sys.exit(1)
     
     # Are we ready ?
     if not configured:
@@ -1020,7 +1026,7 @@ def main():
                 # Don't override arrays with user defied strings
                 config_opts[var] = value
 
-    scratchbox = scratchbox_factory(options.sbver)
+    scratchbox = scratchbox_factory(config_opts['sbver'])
 
     # TODO: shouldn't it be a part of Scratchbox.setup() method?
     # Create sb_basedir/host_usr/bin directory if it doesn't exist
