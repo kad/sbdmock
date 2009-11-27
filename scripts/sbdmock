@@ -517,6 +517,7 @@ class SBBuilder:
         self.root_log("Done.")
         self.root_log("Moving results to accessible directory...")
         self.sb.pull_dir(self.builddir, os.path.join(self.sb.get_basedir(), self.config['root']))
+        self.resultdir = os.path.join(self.sb.get_basedir(), self.config['root'], 'result')
         self._root_log.close()
         if self.config['uniqueext-auto']:
             self.debug("Removing temporary target...")
@@ -908,7 +909,6 @@ def main():
         'host_usr': {},
         'env': { 'DEBIAN_FRONTEND': 'noninteractive', 'DEBIAN_PRIORITY': 'critical' },
         'rm': 'rm',
-        #'dpkg-buildpackage': 'dpkg-buildpackage -rfakeroot -uc -us -sa -D',
         'dpkg-buildpackage': 'dpkg-buildpackage -rfakeroot -uc -us -sa -D',
         'apt-get_options': '',
         'sources.list': '',
