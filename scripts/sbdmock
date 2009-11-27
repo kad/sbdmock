@@ -137,7 +137,7 @@ class SBBuilder:
         if self.config['uniqueext']:
             # temporary target.
             # Let's ensure to remove old one:
-            self._sb_remove_target()
+            self.sb.remove(self.sbtarget)
             # we need to create it
             self._sb_create_target()
         
@@ -234,7 +234,7 @@ class SBBuilder:
         
         if self.config['uniqueext']:
             # temporary target. Let's remove it
-            self._sb_remove_target()
+            self.sb.remove(self.sbtarget)
         else:
             # Normal target. let's just reset it
             # KAD: do we need to install etc and devkits here ?
@@ -518,7 +518,7 @@ class SBBuilder:
         self._root_log.close()
         if self.config['uniqueext-auto']:
             self.debug("Removing temporary target...")
-            self._sb_remove_target()
+            self.sb.remove(self.sbtarget)
     
     def _ensure_dir(self, path):
         """check for dir existence and/or makedir, if error out then raise Error"""
@@ -549,12 +549,6 @@ class SBBuilder:
     def _sb_killall(self, sig = 1):
         """Kills all processes in other scratchbox sessions. SIGHUP should be enough by default"""
         self.do_chroot("sb-conf killall --signal=%d" % sig)
-    
-    
-    def _sb_remove_target(self):
-        """Removes target completelly"""
-        self.sb.remove(self.sbtarget)
-    
     
     def _sb_create_target(self):
         """Creates target from specification"""
