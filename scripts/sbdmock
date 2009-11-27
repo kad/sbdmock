@@ -283,7 +283,7 @@ class SBBuilder:
             # Copy Toolchain C library only, if we don't have rootstrap
             sb_files.append("clibrary")
         # Install files into target
-        self._sb_install_sb_files(sb_files)
+        self.sb.install_files(sb_files)
 
         # After each rootstrap extraction, we need to replace special files in target
         self._sb_extract_special_files()
@@ -532,13 +532,6 @@ class SBBuilder:
                 os.makedirs(path)
             except OSError, err:
                 raise Error, "Could not create dir %s. Error: %s" % (path, err)
-    
-    def _sb_install_sb_files(self, sb_files = ("etc", "devkits")):
-        """Installs into target Scratchbox files (etc, devkits, fakeroot, clibrary)"""
-        #if sb_files and isinstance(sb_files, (types.TupleType,types.ListType) ):
-        #    cmd_args = "sb-conf in --" + " --".join(sb_files)
-        #    self.do_chroot(cmd_args)
-        self.sb.install_files(sb_files)
     
     def _sb_create_target(self):
         """Creates target from specification"""
