@@ -270,7 +270,9 @@ class SBBuilder:
         """prepare root"""
         self.state("prep")
         
-        self._prep_install()
+        # If "clean" set, we already have clean target
+        if not self.config['clean'] or self.config['uniqueext']:
+            self.sb.reset(self.sbtarget)
 
         # files to install into target. 
         # always copy correct /etc, devkits and fakeroot library
@@ -594,13 +596,7 @@ class SBBuilder:
         
         self.root_log("Extracting rootstrap %s" % rootstrap)
         # Local sbox file, just run it
-        (status, output) = self.sb.extract_rootstrap(rootstrap)
-        if output.find("_SBOX_RESTART_FILE") >= 0:
-            # Workarround
-            status = 0
-        if status != 0:
-            self.debug("Error output: "+output)
-            raise SBError, "Failed to extract rootstrap, exiting"
+        output = self.sb.extract_rootstrap(rootstrap)
         self.root_log(output)
     
     
@@ -749,16 +745,6 @@ class SBBuilder:
             sys.exit(ret)
         
         return (ret, output)
-    
-    
-    def _prep_install(self):
-        """prep sb target for installation"""
-        # switch to target
-        # reset target
-        
-        # If "clean" set, we already have clean target
-        if not self.config['clean'] or self.config['uniqueext']:
-            self.sb.reset(self.sbtarget)
     
     def _sb_extract_special_files(self):
         # write in sources.list into chroot
