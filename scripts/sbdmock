@@ -139,7 +139,7 @@ class SBBuilder:
             # Let's ensure to remove old one:
             self.sb.remove(self.sbtarget)
             # we need to create it
-            self._sb_create_target()
+            self.sb.create_target(self.sbtarget, config)    
         
         self._ensure_dir(self.statedir)
         self.state("init")
@@ -533,10 +533,6 @@ class SBBuilder:
             except OSError, err:
                 raise Error, "Could not create dir %s. Error: %s" % (path, err)
     
-    def _sb_create_target(self):
-        """Creates target from specification"""
-        self.sb.create_target(self.sbtarget, self.config)    
-    
     def _sb_make_cmdfile(self, command, fdn):
         """make cmd file for execution inside scratchbox"""
         os.write(fdn,'#!/bin/bash\n\n')
@@ -576,22 +572,6 @@ class SBBuilder:
             retval = 210
             self.debug("Error converting parsed result to integer: %s" % match.group(2))
         return (retval, output)
-    
-    
-    def _sb_ensure_target(self, entarget):
-        """checks current active target"""
-        #self.debug("_sb_ensure_target %s" % entarget)
-        (retval, output) = self.do_chroot('echo "SBOX_TARGET_NAME=$SBOX_TARGET_NAME"')
-        self.debug("Return code: %d" % retval)
-        match = re.search("\n*SBOX_TARGET_NAME=(.+)\n*", output, re.M)
-        if not match:
-            self.debug("Can't find target in output: %s" % output)
-            return False
-        #self.debug("SB Target %s" % m.group(1))
-        if match.group(1) != entarget:
-            return False
-        else:
-            return True
     
     
     def _sb_extract_rootstrap(self):
