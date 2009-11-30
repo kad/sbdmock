@@ -1,3 +1,9 @@
+sbdmock (0.4.4) unstable; urgency=low
+
+  * Compatibility to Scratchbox2 added.
+
+ -- Dmitry Rozhkov <dmitry.rozhkov@nokia.com>  Mon, 30 Nov 2009 15:22:02 +0200
+
 sbdmock (0.4.3) unstable; urgency=low
 
   * Fixed issue while removing work directories after very bad packages
