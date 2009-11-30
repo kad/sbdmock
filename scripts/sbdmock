@@ -515,9 +515,6 @@ class SBBuilder:
         self.sb.killall()
         self.state("done")
         self.root_log("Done.")
-        self.root_log("Moving results to accessible directory...")
-        self.sb.pull_dir(self.builddir, os.path.join(self.sb.get_basedir(), self.config['root']))
-        self.resultdir = os.path.join(self.sb.get_basedir(), self.config['root'], 'result')
         self._root_log.close()
         if self.config['uniqueext-auto']:
             self.debug("Removing temporary target...")
