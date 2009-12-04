@@ -513,6 +513,7 @@ class SBBuilder:
         self.state("ending")
         self._build_log.close()
         self.sb.killall()
+        self.sb.release()
         self.state("done")
         self.root_log("Done.")
         self._root_log.close()
