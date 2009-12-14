@@ -1,3 +1,10 @@
+sbdmock (0.4.6) unstable; urgency=low
+
+  * sb2 selecting target in SBBuilder.__init__
+  * used refactored scratchbox API
+
+ -- Ed Bartosh <eduard.bartosh@nokia.com>  Mon, 14 Dec 2009 14:58:25 +0200
+
 sbdmock (0.4.5) unstable; urgency=low
 
   * Release resources aquired by scratchbox when build is finished.
