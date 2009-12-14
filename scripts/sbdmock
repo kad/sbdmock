@@ -40,7 +40,8 @@ from optparse import OptionParser
 from minideblib.ChangeFile import ChangeFile
 from minideblib.DpkgVersion import DpkgVersion
 
-from bifh.scratchbox.common import Scratchbox, scratchbox_factory
+from scratchbox import scratchbox_factory
+from scratchbox.common import Scratchbox
 
 # Fixed settings, do not change these unless you really know what you are doing
 PackageRegex = "[a-z0-9][a-z0-9.+-]+"        # Regular expression package names must comply with

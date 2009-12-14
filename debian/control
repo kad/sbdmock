@@ -8,7 +8,7 @@ XS-Python-Version: >= 2.3
 
 Package: sbdmock
 Architecture: all
-Depends: ${python:Depends}, python-minideblib, scratchbox-core (>=1.0.6), python-bifhscratchbox (>= 2.1.1)
+Depends: ${python:Depends}, python-minideblib, scratchbox-core (>=1.0.6), python-scratchbox (>= 0.0.2)
 XB-Python-Version: ${python:Versions}
 Description: Tool to rebuild single Debian source package
  in clean scratchbox target
