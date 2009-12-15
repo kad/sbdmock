@@ -110,15 +110,13 @@ class SBBuilder:
         else:
             self.sbtarget = config['sbtarget']
 
-        scratchbox.select(self.sbtarget)
-        
         # paths setup:
         # root = sbdmock target name, e.g. "dist-branch-arch-repo"
         root = config['root']
         # /scratchbox/users/$USER for sb1 or /home/$USER for sb2
         self.basedir = scratchbox.get_basedir()
         # path to target: /scratchbox/users/$USER/targets/$TARGET
-        self.targetdir = scratchbox.get_targetdir()
+        self.targetdir = scratchbox.get_targetdir(self.sbtarget)
         self.debug("Target directory: %s" % self.targetdir)
         # directory inside scratchbox where we perform build.
         # by default = /home/$USER in sb1
