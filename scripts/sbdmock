@@ -110,14 +110,12 @@ class SBBuilder:
         else:
             self.sbtarget = config['sbtarget']
 
+        # set target name to be able to use get_sb_* methods
+        scratchbox.set_target_name(self.sbtarget)
+
         # paths setup:
         # root = sbdmock target name, e.g. "dist-branch-arch-repo"
         root = config['root']
-        # /scratchbox/users/$USER for sb1 or /home/$USER for sb2
-        self.basedir = scratchbox.get_basedir()
-        # path to target: /scratchbox/users/$USER/targets/$TARGET
-        self.targetdir = scratchbox.get_targetdir(self.sbtarget)
-        self.debug("Target directory: %s" % self.targetdir)
         # directory inside scratchbox where we perform build.
         # by default = /home/$USER in sb1
         # Base directories for build's workspace
@@ -605,7 +603,6 @@ class SBBuilder:
         
         self.debug("Executing(scratchbox) %s" % command)
         (sbtmpfd, sbtmpname) = tempfile.mkstemp('.sh', 'sbdmock-', self.sb.get_tmpdir())
-        #sb_tmpname = sbtmpname[len(self.basedir):]
         sb_tmpname = os.path.join(self.sb.get_sb_tmpdir(), os.path.basename(sbtmpname))
         self.debug("tmpfile %s %s" % (sbtmpname,sb_tmpname))
         
@@ -638,7 +635,6 @@ class SBBuilder:
         
         self.debug("Executing(scratchbox) %s" % command)
         (sbtmpfd, sbtmpname) = tempfile.mkstemp('.sh', 'sbdmock-', self.sb.get_tmpdir())
-        #sb_tmpname = sbtmpname[len(self.basedir):]
         sb_tmpname = os.path.join(self.sb.get_sb_tmpdir(), os.path.basename(sbtmpname))
         self.debug("tmpfile %s %s" % (sbtmpname,sb_tmpname))
         
@@ -748,7 +744,7 @@ class SBBuilder:
     
     def _sb_extract_special_files(self):
         # write in sources.list into chroot
-        aptsconf = os.path.join(self.targetdir, 'etc', 'apt','sources.list')
+        aptsconf = os.path.join(self.sb.get_targetdir(), 'etc', 'apt','sources.list')
         self.debug("Extracting sources.list (%s)" % aptsconf)
         aptsconf_fo = open(aptsconf, 'w')
         aptsconf_content = self.config['sources.list']
@@ -757,7 +753,7 @@ class SBBuilder:
         # files in /etc that need doing
         filedict = self.config['files']
         for key in filedict:
-            fnm = '%s%s' % (self.targetdir, key)
+            fnm = '%s%s' % (self.sb.get_targetdir(), key)
             self.debug("Extracting file %s" % fnm)
             fon = open(fnm, 'w')
             fon.write(filedict[key])
@@ -771,7 +767,7 @@ class SBBuilder:
     def _sb_setup_host_usr_symlink(self):
         """Remove /host_usr/bin. If we have our own"""
         # No need to make /host_usr/bin if no hacks in it
-        dname_c = os.path.join(self.basedir, 'host_usr/bin')
+        dname_c = os.path.join(self.sb.get_basedir(), 'host_usr/bin')
         dname_t = 'bin.' + self.sbtarget
         if os.path.islink(dname_c):
             if os.readlink(dname_c) == dname_t:
@@ -792,7 +788,7 @@ class SBBuilder:
     
     def _sb_setup_host_usr(self):
         if self.config['host_usr']:
-            dname = os.path.join(self.basedir, 'host_usr/bin') + '.' + self.sbtarget
+            dname = os.path.join(self.sb.get_basedir(), 'host_usr/bin') + '.' + self.sbtarget
             # assume that we don't have such directory.
             self._ensure_dir(dname)
             
@@ -808,10 +804,10 @@ class SBBuilder:
     
     
     def _sb_clean_host_usr(self):
-        dname = os.path.join(self.basedir, 'host_usr/bin') + '.' + self.sbtarget
+        dname = os.path.join(self.sb.get_basedir(), 'host_usr/bin') + '.' + self.sbtarget
         if os.path.exists(dname):
             shutil.rmtree(dname, True)
-        dname = os.path.join(self.basedir, 'host_usr/bin')
+        dname = os.path.join(self.sb.get_basedir(), 'host_usr/bin')
         if os.path.islink(dname) and os.readlink(dname) == "bin." + self.sbtarget:
             os.unlink(dname)
 
